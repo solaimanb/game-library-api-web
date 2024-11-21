@@ -26,7 +26,7 @@ export default function GameList({ games, loading }: GameListProps) {
   }
 
   return (
-    <div className="grid grid-cols-2 xl:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
       {games.map(game => (
         <Card key={game.id} className="bg-black text-white hover:shadow-lg border-[#A1FF00]/10 hover:border-[#A1FF00]/20 hover:cursor-pointer duration-300 transition-all rounded-none flex flex-col justify-between">
           <CardHeader className="overflow-hidden">
