@@ -10,10 +10,20 @@ import {
   DialogDescription,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Plus } from 'lucide-react';
+import useGameCategories from '@/hooks/useGameCategories';
+import Loading from '@/app/loading';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface AddGameDialogProps {
   onAddGame: (game: {
@@ -32,6 +42,9 @@ const AddGameDialog: React.FC<AddGameDialogProps> = ({ onAddGame }) => {
   const [releaseYear, setReleaseYear] = useState(0);
   const [rating, setRating] = useState(0);
   const [isMultiplayer, setIsMultiplayer] = useState(false);
+  const { categories, loading, error } = useGameCategories();
+
+  const years = Array.from({ length: 50 }, (_, i) => new Date().getFullYear() - i);
 
   const handleAddGame = () => {
     onAddGame({
@@ -49,10 +62,16 @@ const AddGameDialog: React.FC<AddGameDialogProps> = ({ onAddGame }) => {
     setOpen(false);
   };
 
+  const handleScroll = (event: React.WheelEvent) => {
+    event.stopPropagation();
+  };
+
+  if (loading) return <Loading />;
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="icon" className="bg-transparent border border-[#A1FF00]/10 hover:bg-[#A1FF00]/10 hover:text-[#A1FF00] transition-all duration-300">
+        <Button size="icon" className="border border-[#A1FF00]/10 bg-[#A1FF00]/20 hover:bg-[#A1FF00]/10 hover:text-[#A1FF00] transition-all duration-300">
           <Plus />
         </Button>
       </DialogTrigger>
@@ -79,24 +98,45 @@ const AddGameDialog: React.FC<AddGameDialogProps> = ({ onAddGame }) => {
             <Label htmlFor="category" className="text-right">
               Category
             </Label>
-            <Input
-              id="category"
+            <Select
               value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="col-span-3 border border-[#A1FF00]/40"
-            />
+              onValueChange={setCategory}
+            >
+              <SelectTrigger className="col-span-3 border border-[#A1FF00]/40">
+                <SelectValue placeholder="Select a category" />
+              </SelectTrigger>
+              <SelectContent>
+                <ScrollArea className="h-40 overflow-hidden" onWheel={handleScroll}>
+                  {categories?.map((cat: string) => (
+                    <SelectItem key={cat} value={cat}>
+                      {cat}
+                    </SelectItem>
+                  ))}
+                </ScrollArea>
+              </SelectContent>
+            </Select>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="release-year" className="text-right">
               Release Year
             </Label>
-            <Input
-              id="release-year"
-              type="number"
-              value={releaseYear}
-              onChange={(e) => setReleaseYear(parseInt(e.target.value))}
-              className="col-span-3 border border-[#A1FF00]/40"
-            />
+            <Select
+              value={releaseYear.toString()}
+              onValueChange={(value) => setReleaseYear(parseInt(value))}
+            >
+              <SelectTrigger className="col-span-3 border border-[#A1FF00]/40">
+                <SelectValue placeholder="Select a year" />
+              </SelectTrigger>
+              <SelectContent>
+                <ScrollArea className="h-40 overflow-hidden" onWheel={handleScroll}>
+                  {years.map((year) => (
+                    <SelectItem key={year} value={year.toString()}>
+                      {year}
+                    </SelectItem>
+                  ))}
+                </ScrollArea>
+              </SelectContent>
+            </Select>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="rating" className="text-right">

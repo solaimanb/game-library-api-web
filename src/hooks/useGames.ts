@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useToast } from './use-toast';
+import axiosInstance from '@/lib/axiosInstance';
 
 interface Game {
   id: number;
@@ -27,10 +28,8 @@ export function useGames() {
 
   const fetchGames = useCallback(async () => {
     try {
-      const response = await fetch('https://game-library-api-a0uf.onrender.com/games');
-      if (!response.ok) throw new Error('Failed to fetch games');
-      const data = await response.json();
-      setGames(data);
+      const response = await axiosInstance.get('/games/');
+      setGames(response.data);
     } catch (error) {
       console.error('Error fetching games:', error);
       toast({
@@ -46,16 +45,8 @@ export function useGames() {
 
   const addGame = async (newGame: NewGame) => {
     try {
-      const response = await fetch('https://game-library-api-a0uf.onrender.com/games', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newGame),
-      });
-
-      if (!response.ok) throw new Error('Failed to add game');
-      const addedGame = await response.json();
+      const response = await axiosInstance.post('/games/', newGame);
+      const addedGame = response.data;
 
       setGames(currentGames => [...currentGames, addedGame]);
 
@@ -71,7 +62,7 @@ export function useGames() {
         title: "Error",
         description: "Failed to add game. Please try again.",
         variant: "destructive",
-        duration: 3000,
+        duration: 2000,
       });
       return { success: false, error };
     }
