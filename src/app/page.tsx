@@ -11,11 +11,11 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-black py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto space-y-4">
-        <div className="flex items-center justify-between mb-10 border border-[#A1FF00]/10 p-2 rounded-sm">
+        <div className="flex items-center justify-between mb-10 border border-glagreen/10 p-2 rounded-sm">
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-bold text-center text-white">🎮 GAME-LIBRARY-API </h1>
             <sup>
-              <Badge variant="default" className="text-[#A1FF00] font-bold lowercase">
+              <Badge variant="default" className="text-glagreen font-bold lowercase">
                 WEB
               </Badge>
             </sup>

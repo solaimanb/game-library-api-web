@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -16,7 +16,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -36,12 +36,14 @@ interface AddGameDialogProps {
 
 const AddGameDialog: React.FC<AddGameDialogProps> = ({ onAddGame }) => {
   const [open, setOpen] = useState(false);
-  const [title, setTitle] = useState('');
-  const [category, setCategory] = useState('');
-  const [releaseYear, setReleaseYear] = useState(0);
-  const [rating, setRating] = useState(0);
-  const [isMultiplayer, setIsMultiplayer] = useState(false);
-  const { categories, loading, error } = useGameCategories();
+  const [formData, setFormData] = useState({
+    title: '',
+    category: '',
+    releaseYear: 0,
+    rating: 0,
+    isMultiplayer: false,
+  });
+  const { categories } = useGameCategories();
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const years = Array.from({ length: 50 }, (_, i) => new Date().getFullYear() - i);
@@ -49,16 +51,16 @@ const AddGameDialog: React.FC<AddGameDialogProps> = ({ onAddGame }) => {
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
 
-    if (title.length < 2 || title.length > 100) {
+    if (formData.title.length < 2 || formData.title.length > 100) {
       newErrors.title = 'Title must be between 2 and 100 characters.';
     }
-    if (!category) {
+    if (!formData.category) {
       newErrors.category = 'Category is required.';
     }
-    if (releaseYear <= 1970 || releaseYear >= 2025) {
+    if (formData.releaseYear <= 1970 || formData.releaseYear >= 2025) {
       newErrors.release_year = 'Release year must be between 1971 and 2024.';
     }
-    if (rating < 0 || rating > 10) {
+    if (formData.rating < 0 || formData.rating > 10) {
       newErrors.rating = 'Rating must be between 0 and 10.';
     }
 
@@ -66,25 +68,27 @@ const AddGameDialog: React.FC<AddGameDialogProps> = ({ onAddGame }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleAddGame = () => {
+  const handleAddGame = useCallback(() => {
     if (!validateForm()) {
       return;
     }
 
     onAddGame({
-      title,
-      category,
-      release_year: releaseYear,
-      rating,
-      is_multiplayer: isMultiplayer,
+      title: formData.title,
+      category: formData.category,
+      release_year: formData.releaseYear,
+      rating: formData.rating,
+      is_multiplayer: formData.isMultiplayer,
     });
-    setTitle('');
-    setCategory('');
-    setReleaseYear(0);
-    setRating(0);
-    setIsMultiplayer(false);
+    setFormData({
+      title: '',
+      category: '',
+      releaseYear: 0,
+      rating: 0,
+      isMultiplayer: false,
+    });
     setOpen(false);
-  };
+  }, [formData, onAddGame]);
 
   const handleScroll = (event: React.WheelEvent) => {
     event.stopPropagation();
@@ -93,11 +97,11 @@ const AddGameDialog: React.FC<AddGameDialogProps> = ({ onAddGame }) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="icon" className="border border-[#A1FF00]/10 bg-[#A1FF00]/20 hover:bg-[#A1FF00]/10 hover:text-[#A1FF00] transition-all duration-300">
+        <Button size="icon" className="border border-glagreen/10 bg-glagreen/20 hover:bg-glagreen/10 hover:text-glagreen transition-all duration-300">
           <Plus />
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-[90%] rounded-sm sm:max-w-sm bg-zinc-400/20 backdrop-blur-2xl text-white border-[#A1FF00]/10 border-2">
+      <DialogContent className="w-[90%] rounded-sm sm:max-w-sm bg-zinc-400/20 backdrop-blur-2xl text-white border-glagreen/10 border-2">
         <DialogHeader>
           <DialogTitle>Add New Game</DialogTitle>
           <DialogDescription className="text-xs">
@@ -111,10 +115,10 @@ const AddGameDialog: React.FC<AddGameDialogProps> = ({ onAddGame }) => {
             </Label>
             <Input
               id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              value={formData.title}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               placeholder="Enter game title"
-              className="col-span-3 border border-[#A1FF00]/40 placeholder:text-xs"
+              className="col-span-3 border border-glagreen/40 placeholder:text-xs"
             />
             {errors.title && <p className="col-span-4 text-red-500 text-xs">{errors.title}</p>}
           </div>
@@ -123,10 +127,10 @@ const AddGameDialog: React.FC<AddGameDialogProps> = ({ onAddGame }) => {
               Category
             </Label>
             <Select
-              value={category}
-              onValueChange={(value: string) => setCategory(value)}
+              value={formData.category}
+              onValueChange={(value: string) => setFormData({ ...formData, category: value })}
             >
-              <SelectTrigger className="col-span-3 border border-[#A1FF00]/40">
+              <SelectTrigger className="col-span-3 border border-glagreen/40">
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
               <SelectContent>
@@ -146,10 +150,10 @@ const AddGameDialog: React.FC<AddGameDialogProps> = ({ onAddGame }) => {
               Release Year
             </Label>
             <Select
-              value={releaseYear.toString()}
-              onValueChange={(value: string) => setReleaseYear(parseInt(value))}
+              value={formData.releaseYear.toString()}
+              onValueChange={(value: string) => setFormData({ ...formData, releaseYear: parseInt(value) })}
             >
-              <SelectTrigger className="col-span-3 border border-[#A1FF00]/40">
+              <SelectTrigger className="col-span-3 border border-glagreen/40">
                 <SelectValue placeholder="Select a year" />
               </SelectTrigger>
               <SelectContent>
@@ -171,10 +175,10 @@ const AddGameDialog: React.FC<AddGameDialogProps> = ({ onAddGame }) => {
             <Input
               id="rating"
               type="number"
-              value={rating}
-              onChange={(e) => setRating(parseFloat(e.target.value))}
+              value={formData.rating}
+              onChange={(e) => setFormData({ ...formData, rating: parseFloat(e.target.value) })}
               placeholder="Enter rating (0-10)"
-              className="col-span-3 border border-[#A1FF00]/40"
+              className="col-span-3 border border-glagreen/40"
             />
             {errors.rating && <p className="col-span-4 text-red-500 text-xs">{errors.rating}</p>}
           </div>
@@ -186,8 +190,8 @@ const AddGameDialog: React.FC<AddGameDialogProps> = ({ onAddGame }) => {
               <input
                 id="is-multiplayer"
                 type="checkbox"
-                checked={isMultiplayer}
-                onChange={(e) => setIsMultiplayer(e.target.checked)}
+                checked={formData.isMultiplayer}
+                onChange={(e) => setFormData({ ...formData, isMultiplayer: e.target.checked })}
               />
               <label htmlFor="is-multiplayer" className="text-white">
                 Yes
@@ -196,7 +200,7 @@ const AddGameDialog: React.FC<AddGameDialogProps> = ({ onAddGame }) => {
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit" onClick={handleAddGame} className='text-[#A1FF00] bg-[#A1FF00]/20 hover:bg-[#A1FF00]/20 font-bold'>
+          <Button type="submit" onClick={handleAddGame} className='text-glagreen bg-glagreen/20 hover:bg-glagreen/20 font-bold'>
             Save Game
           </Button>
         </DialogFooter>

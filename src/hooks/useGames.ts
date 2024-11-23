@@ -52,31 +52,18 @@ export function useGames() {
       setGames(currentGames => [...currentGames, addedGame]);
 
       toast({
-        title: "Success",
+        title: "Congratulations!",
         description: "Game added successfully!",
       });
 
       return { success: true, addedGame };
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const errorMessage = error.response?.data?.message || 'Failed to add game. Please try again.';
-        toast({
-          title: "Error",
-          description: errorMessage,
-          variant: "destructive",
-          duration: 2000,
-        });
-      } else {
-        toast({
-          title: "Error",
-          description: "An unexpected error occurred. Please try again.",
-          variant: "destructive",
-          duration: 2000,
-        });
-      }
+      const errorMessage = axios.isAxiosError(error) && error.response?.data?.message
+        ? error.response.data.message
+        : 'Failed to add game. Please try again.';
       toast({
         title: "Error",
-        description: "Failed to add game. Please try again.",
+        description: errorMessage,
         variant: "destructive",
         duration: 2000,
       });

@@ -3,8 +3,10 @@ import { useState, useEffect } from 'react';
 
 const useGameCategories = () => {
   const [categories, setCategories] = useState<string[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [status, setStatus] = useState<{ loading: boolean; error: string | null }>({
+    loading: true,
+    error: null,
+  });
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -12,20 +14,16 @@ const useGameCategories = () => {
         const response = await axiosInstance.get('/game-categories');
         setCategories(response.data);
       } catch (err) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError('An unknown error occurred');
-        }
+        setStatus({ loading: false, error: err instanceof Error ? err.message : 'An unknown error occurred' });
       } finally {
-        setLoading(false);
+        setStatus(prev => ({ ...prev, loading: false }));
       }
     };
 
     fetchCategories();
   }, []);
 
-  return { categories, loading, error };
+  return { categories, loading: status.loading, error: status.error };
 };
 
 export default useGameCategories;

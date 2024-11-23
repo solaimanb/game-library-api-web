@@ -21,73 +21,70 @@ interface GameListProps {
 }
 
 export default function GameList({ games, loading }: GameListProps) {
-  if (loading) {
-    return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {[...Array(4)].map((_, index) => (
-          <GameCardSkeleton key={index} />
-        ))}
-      </div>
-    )
-  }
-
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      {games.map(game => (
-        game.isLoading ? (
-          <GameCardSkeleton key={`loading-${game.id}`} />
-        ) : (
-          <Card
-            key={game.id}
-            className="bg-black text-white hover:shadow-lg border-[#A1FF00]/20 hover:border-[#A1FF00]/40 hover:cursor-pointer duration-300 transition-all rounded-sm flex flex-col justify-between"
-          >
-            <CardHeader className="overflow-hidden">
-              <p className="text-[#A1FF00] text-7xl opacity-10 font-bold">
-                {game.rating.toFixed(1)}
-              </p>
-            </CardHeader>
-            <CardContent className='p-2'>
-              <CardContent className="px-4 py-3">
-                <div className="flex items-center justify-between gap-4 mb-2">
-                  <Badge variant="default" className="text-[#A1FF00] text-[10px] font-bold uppercase">
-                    {game.category}
-                  </Badge>
-                  <span className="text-[#A1FF00] text-[10px] font-bold">
-                    {game.release_year}
-                  </span>
-                </div>
-                <h3 className="text-xl font-bold mb-2">{game.title}</h3>
-              </CardContent>
-              <CardFooter className="bg-[#1A1A1A] mt-auto px-2 py-3 flex items-center justify-between">
-                <span className="text-[#A1FF00] text-xs font-semibold">
-                  Metacritic Score
-                </span>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Badge className="text-[10px] font-bold uppercase bg-[#A1FF00] text-black hover:text-[#A1FF00] transition-all duration-300 px-2 py-1 space-x-2">
-                        <span className="flex items-center">
-                          View Details <ArrowUpRight size={18} />
-                        </span>
-                      </Badge>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Available on v0.2</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </CardFooter>
-            </CardContent>
-          </Card>
-        )
-      ))}
+      {loading ? (
+        [...Array(4)].map((_, index) => <GameCardSkeleton key={index} />)
+      ) : (
+        games.map(game => (
+          game.isLoading ? (
+            <GameCardSkeleton key={`loading-${game.id}`} />
+          ) : (
+            <GameCard key={game.id} game={game} />
+          )
+        ))
+      )}
     </div>
   )
 }
 
+const GameCard = ({ game }: { game: Game }) => (
+  <Card
+    key={game.id}
+    className="bg-black text-white hover:shadow-lg border-glagreen/20 hover:border-glagreen/40 hover:cursor-pointer duration-300 transition-all rounded-sm flex flex-col justify-between"
+  >
+    <CardHeader className="overflow-hidden">
+      <p className="text-glagreen text-7xl opacity-10 font-bold">
+        {game.rating.toFixed(1)}
+      </p>
+    </CardHeader>
+    <CardContent className='p-2'>
+      <CardContent className="px-4 py-3">
+        <div className="flex items-center justify-between gap-4 mb-2">
+          <Badge variant="default" className="text-glagreen text-[10px] font-bold uppercase">
+            {game.category}
+          </Badge>
+          <span className="text-glagreen text-[10px] font-bold">
+            {game.release_year}
+          </span>
+        </div>
+        <h3 className="text-xl font-bold mb-2">{game.title}</h3>
+      </CardContent>
+      <CardFooter className="bg-[#1A1A1A] mt-auto px-2 py-3 flex items-center justify-between">
+        <span className="text-glagreen text-xs font-semibold">
+          Metacritic Score
+        </span>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Badge className="text-[10px] font-bold uppercase bg-glagreen text-black hover:text-glagreen transition-all duration-300 px-2 py-1 space-x-2">
+                <span className="flex items-center">
+                  View Details <ArrowUpRight size={18} />
+                </span>
+              </Badge>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Available on v0.2</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </CardFooter>
+    </CardContent>
+  </Card>
+)
 
 const GameCardSkeleton = () => (
-  <Card className="bg-black text-white border-[#A1FF00]/20 rounded-none flex flex-col justify-between">
+  <Card className="bg-black text-white border-glagreen/20 rounded-none flex flex-col justify-between">
     <CardHeader className="overflow-hidden">
       <Skeleton className="h-24 w-full bg-gray-700/20" />
     </CardHeader>
