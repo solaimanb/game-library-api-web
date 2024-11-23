@@ -36,7 +36,7 @@ A full-stack application for managing and displaying video game collections.
 
 1. **Clone Repository**
 ```bash
-git clone <repository-url>
+git clone https://github.com/solaimanb/game-library-api-web.git
 ```
 2. **Install Dependencies**
 ```bash
