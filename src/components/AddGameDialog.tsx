@@ -42,10 +42,35 @@ const AddGameDialog: React.FC<AddGameDialogProps> = ({ onAddGame }) => {
   const [rating, setRating] = useState(0);
   const [isMultiplayer, setIsMultiplayer] = useState(false);
   const { categories, loading, error } = useGameCategories();
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const years = Array.from({ length: 50 }, (_, i) => new Date().getFullYear() - i);
 
+  const validateForm = () => {
+    const newErrors: { [key: string]: string } = {};
+
+    if (title.length < 2 || title.length > 100) {
+      newErrors.title = 'Title must be between 2 and 100 characters.';
+    }
+    if (!category) {
+      newErrors.category = 'Category is required.';
+    }
+    if (releaseYear <= 1970 || releaseYear >= 2025) {
+      newErrors.release_year = 'Release year must be between 1971 and 2024.';
+    }
+    if (rating < 0 || rating > 10) {
+      newErrors.rating = 'Rating must be between 0 and 10.';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleAddGame = () => {
+    if (!validateForm()) {
+      return;
+    }
+
     onAddGame({
       title,
       category,
@@ -75,29 +100,31 @@ const AddGameDialog: React.FC<AddGameDialogProps> = ({ onAddGame }) => {
       <DialogContent className="w-[90%] rounded-sm sm:max-w-sm bg-zinc-400/20 backdrop-blur-2xl text-white border-[#A1FF00]/10 border-2">
         <DialogHeader>
           <DialogTitle>Add New Game</DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-xs">
             Fill out the form to add a new game to your library.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="title" className="text-right">
+          <div className="grid grid-cols-4 items-start gap-4">
+            <Label htmlFor="title" className="text-left">
               Title
             </Label>
             <Input
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="col-span-3 border border-[#A1FF00]/40"
+              placeholder="Enter game title"
+              className="col-span-3 border border-[#A1FF00]/40 placeholder:text-xs"
             />
+            {errors.title && <p className="col-span-4 text-red-500 text-xs">{errors.title}</p>}
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="category" className="text-right">
+          <div className="grid grid-cols-4 items-start gap-4">
+            <Label htmlFor="category" className="text-left">
               Category
             </Label>
             <Select
               value={category}
-              onValueChange={setCategory}
+              onValueChange={(value: string) => setCategory(value)}
             >
               <SelectTrigger className="col-span-3 border border-[#A1FF00]/40">
                 <SelectValue placeholder="Select a category" />
@@ -112,9 +139,10 @@ const AddGameDialog: React.FC<AddGameDialogProps> = ({ onAddGame }) => {
                 </ScrollArea>
               </SelectContent>
             </Select>
+            {errors.category && <p className="col-span-4 text-red-500 text-xs">{errors.category}</p>}
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="release-year" className="text-right">
+          <div className="grid grid-cols-4 items-start gap-4">
+            <Label htmlFor="release-year" className="text-left">
               Release Year
             </Label>
             <Select
@@ -134,9 +162,10 @@ const AddGameDialog: React.FC<AddGameDialogProps> = ({ onAddGame }) => {
                 </ScrollArea>
               </SelectContent>
             </Select>
+            {errors.release_year && <p className="col-span-4 text-red-500 text-xs">{errors.release_year}</p>}
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="rating" className="text-right">
+          <div className="grid grid-cols-4 items-start gap-4">
+            <Label htmlFor="rating" className="text-left">
               Rating
             </Label>
             <Input
@@ -144,11 +173,13 @@ const AddGameDialog: React.FC<AddGameDialogProps> = ({ onAddGame }) => {
               type="number"
               value={rating}
               onChange={(e) => setRating(parseFloat(e.target.value))}
+              placeholder="Enter rating (0-10)"
               className="col-span-3 border border-[#A1FF00]/40"
             />
+            {errors.rating && <p className="col-span-4 text-red-500 text-xs">{errors.rating}</p>}
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="is-multiplayer" className="text-right">
+          <div className="grid grid-cols-4 items-start gap-4">
+            <Label htmlFor="is-multiplayer" className="text-left">
               Multiplayer
             </Label>
             <div className="col-span-3 flex items-center gap-2">

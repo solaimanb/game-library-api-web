@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useToast } from './use-toast';
 import axiosInstance from '@/lib/axiosInstance';
+import axios from 'axios';
 
 interface Game {
   id: number;
@@ -57,7 +58,22 @@ export function useGames() {
 
       return { success: true, addedGame };
     } catch (error) {
-      console.error('Error adding game:', error);
+      if (axios.isAxiosError(error)) {
+        const errorMessage = error.response?.data?.message || 'Failed to add game. Please try again.';
+        toast({
+          title: "Error",
+          description: errorMessage,
+          variant: "destructive",
+          duration: 2000,
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "An unexpected error occurred. Please try again.",
+          variant: "destructive",
+          duration: 2000,
+        });
+      }
       toast({
         title: "Error",
         description: "Failed to add game. Please try again.",
