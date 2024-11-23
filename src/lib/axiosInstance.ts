@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: 'https://game-library-api-a0uf.onrender.com/',
+  baseURL: 'https://game-library-api-srv.vercel.app/',
 });
 
 export default axiosInstance;
