@@ -22,7 +22,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Plus } from 'lucide-react';
 import useGameCategories from '@/hooks/useGameCategories';
-import Loading from '@/app/loading';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface AddGameDialogProps {
@@ -66,8 +65,6 @@ const AddGameDialog: React.FC<AddGameDialogProps> = ({ onAddGame }) => {
     event.stopPropagation();
   };
 
-  if (loading) return <Loading />;
-
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -75,7 +72,7 @@ const AddGameDialog: React.FC<AddGameDialogProps> = ({ onAddGame }) => {
           <Plus />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md bg-zinc-400/20 backdrop-blur-2xl text-white border-[#A1FF00]/10 border-2">
+      <DialogContent className="w-[90%] rounded-sm sm:max-w-sm bg-zinc-400/20 backdrop-blur-2xl text-white border-[#A1FF00]/10 border-2">
         <DialogHeader>
           <DialogTitle>Add New Game</DialogTitle>
           <DialogDescription>
@@ -122,7 +119,7 @@ const AddGameDialog: React.FC<AddGameDialogProps> = ({ onAddGame }) => {
             </Label>
             <Select
               value={releaseYear.toString()}
-              onValueChange={(value) => setReleaseYear(parseInt(value))}
+              onValueChange={(value: string) => setReleaseYear(parseInt(value))}
             >
               <SelectTrigger className="col-span-3 border border-[#A1FF00]/40">
                 <SelectValue placeholder="Select a year" />

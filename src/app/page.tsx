@@ -3,15 +3,10 @@
 import AddGameDialog from "@/components/AddGameDialog";
 import GameList from "@/components/GameList";
 import { useGames } from "@/hooks/useGames";
-import Loading from "./loading";
 import { Badge } from "@/components/ui/badge";
 
 export default function Home() {
   const { games, loading, addGame } = useGames();
-
-  if (loading) {
-    return <Loading />
-  }
 
   return (
     <main className="min-h-screen bg-black py-12 px-4 sm:px-6 lg:px-8">

@@ -4,7 +4,6 @@ import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { ArrowUpRight } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip'
-import Loading from '@/app/loading'
 import { Skeleton } from './ui/skeleton'
 
 interface Game {
